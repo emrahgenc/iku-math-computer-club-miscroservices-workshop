@@ -1,0 +1,87 @@
+﻿services:
+  microservicesexp.gateway:
+    image: microservicesexp.gateway
+    build:
+      context: .
+      dockerfile: MicroservicesExp.Gateway/Dockerfile
+    ports:
+      - "8081:80" 
+    depends_on:
+      - "microservicesexp.listing.api"
+      - "microservicesexp.merchant.api"
+      - "microservicesexp.product.api"
+
+  microservicesexp.listing.api:
+    image: microservicesexp.listing.api
+    build:
+      context: .
+      dockerfile: MicroservicesExp.Listing.Api/Dockerfile
+    ports:
+      - "5010:80"
+
+  microservicesexp.merchant.api:
+    image: microservicesexp.merchant.api
+    build:
+      context: .
+      dockerfile: MicroservicesExp.Merchant.Api/Dockerfile
+    ports:
+      - "5011:80"
+      
+  microservicesexp.product.api:
+    image: microservicesexp.product.api
+    build:
+      context: .
+      dockerfile: MicroservicesExp.Product.Api/Dockerfile
+    ports:
+      - "5012:80"
+    depends_on:
+      - "sql-server"
+      
+
+  microservicesexp.ai.api:
+    image: microservicesexp.ai.api
+    build:
+      context: .
+      dockerfile: MicroservicesExp.Ai.Api/Dockerfile
+    ports:
+      - "5013:80"
+      
+      
+  microservicesexp.web:
+    image: microservicesexp.web
+    build:
+      context: .
+      dockerfile: MicroservicesExp.Web/Dockerfile
+    ports:
+      - "5014:80"
+
+  sql-server:
+    image: "mcr.microsoft.com/mssql/server"
+    container_name: sql_server
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+        
+  mongo:
+    container_name: mongo-exp
+    image: mongo
+    command: mongod --port 37017
+    ports:
+      - "37017:37017"
+    
+    
+  rabbitmq-exp:
+    build:
+      context: ./
+      dockerfile: Rabbit.DockerFile
+    container_name: 'rabbitmq-exp'
+    ports:
+      - 35672:5672
+      - 35673:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=sa
+      - RABBITMQ_DEFAULT_PASS=Sa123456
+        
+
